@@ -1,0 +1,128 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  Simple implementation of a REST API for an imaginary todo app.
+Globals:
+  Function:
+    Runtime: java8
+    Timeout: 60
+    MemorySize: 256
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+    Description: The Lambda Function Stage
+Resources:
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name:
+        Fn::Sub: gobaskt-basket-${StageName}
+      StageName:
+        Ref: StageName
+  ListBasketFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-lists-Basket-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BasketHandler::listTasks
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basket
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+  CreateBasketFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-create-Basket-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BasketHandler::createTask
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basket
+            Method: POST
+            RestApiId:
+              Ref: RestApi
+  GetBasketidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-get-basketById-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BasketHandler::getTask
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basket/{id}
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+  GetBasketofferidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-get-basketByOfferId-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BasketHandler::getbasketByOfferId
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basketByOffer/{id}
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+  DeleteBasketofferidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-delete-basketByOfferId-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BasketHandler::deleteOffers
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basketByOffer/{id}
+            Method: DELETE
+            RestApiId:
+              Ref: RestApi
+  TasksTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName:
+        Fn::Sub: basket_Activity
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1

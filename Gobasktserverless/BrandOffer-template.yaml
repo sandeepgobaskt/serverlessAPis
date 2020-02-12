@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+    Simple implementation of a REST API for an Gobaskt app.
+Globals:
+  Function:
+    Runtime: java8
+    Timeout: 60
+    MemorySize: 256
+
+Parameters:
+  StageName:
+    Type: String
+    Default: dev
+    Description: The Lambda Function Stage
+
+Resources:
+
+  RestApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name:
+        Fn::Sub: gobaskt-BrandOffers-${StageName}
+      StageName:
+        Ref: StageName
+
+  ListBrandOffersFunction: 
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-lists-BrandOffers-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::listBrandOffers
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/brandOffers
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+
+  CreateBrandOffersFunction: 
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-create-BrandOffers-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::createBrandOffers
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/brandOffers
+            Method: POST
+            RestApiId:
+              Ref: RestApi           
+
+  GetBrandOffersFunction: 
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-get-BrandOffers-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::getBrandOffer
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/brandOffers/{id}
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+  GetBrandoffersBySearchFunction: 
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-get-BrandOffers-search-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::getOffersBySearch
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/brandOffers/{search}
+            Method: GET
+            RestApiId:
+              Ref: RestApi
+  
+  TasksTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName:
+        Fn::Sub: BrandOfferDummy
+      PrimaryKey:
+        Name: id
+        Type: String
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
