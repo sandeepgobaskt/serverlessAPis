@@ -30,6 +30,7 @@ public class BasketServiceImpl implements BasketService {
 		this.mapper = new DynamoDBMapper(this.client);
 	}
 
+//save offers to basket
 	@Override
 	public BasketActivity saveToDB(Object object) {
 
@@ -49,42 +50,53 @@ public class BasketServiceImpl implements BasketService {
 		return null;
 	}
 
+	// get basket by Id
 	@Override
 	public BasketActivity getBasketOfferById(String basketId) {
 		// TODO Auto-generated method stub
 		return mapper.load(BasketActivity.class, basketId);
 	}
 
+	// get all basket offers
 	@Override
 	public List<BasketActivity> getBasket() {
 		// TODO Auto-generated method stub
 		return this.mapper.scan(BasketActivity.class, new DynamoDBScanExpression());
 	}
 
+	// get offers by Id inside basket
 	@Override
 	public List<BasketActivity> getBasketByOfferId(String offerId) {
-		
-		  HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
-		  eav.put(":v1", new AttributeValue().withS(offerId));
-		  
-		  DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
-		  .withFilterExpression("offers.offerId = :v1") .withExpressionAttributeValues(eav);
-		  
-		  List<BasketActivity> replies = mapper.scan(BasketActivity.class,
-		  scanExpression); return replies;
-		 
-     }
-	
 
+		HashMap<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
+		eav.put(":v1", new AttributeValue().withS(offerId));
+
+		DynamoDBScanExpression scanExpression = new DynamoDBScanExpression()
+				.withFilterExpression("offers.offerId = :v1").withExpressionAttributeValues(eav);
+
+		List<BasketActivity> replies = mapper.scan(BasketActivity.class, scanExpression);
+		return replies;
+
+	}
+
+//delete offers By Id
 	@Override
-	public void deleteBasketById(String id) {
+	public BasketActivity deleteBasketByOfferId(String id) {
 		BasketActivity task = this.getBasketOfferById(id);
 		if (task != null) {
 			this.mapper.delete(task);
 		}
-
+		return task;
 	}
 
-	
+	@Override
+	public BasketActivity deleteByBasketId(String id) {
+		BasketActivity task = this.getBasketOfferById(id);
+		if (task != null) {
+			this.mapper.delete(task);
+		}
+		return task;
+
+	}
 
 }

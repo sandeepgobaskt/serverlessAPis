@@ -1,21 +1,18 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-    Simple implementation of a REST API for an Gobaskt app.
+Description: |
+  Simple implementation of a REST API for an Gobaskt app.
 Globals:
   Function:
     Runtime: java8
     Timeout: 60
     MemorySize: 256
-
 Parameters:
   StageName:
     Type: String
     Default: dev
     Description: The Lambda Function Stage
-
 Resources:
-
   RestApi:
     Type: AWS::Serverless::Api
     Properties:
@@ -23,14 +20,13 @@ Resources:
         Fn::Sub: gobaskt-BrandOffers-${StageName}
       StageName:
         Ref: StageName
-
-  ListBrandOffersFunction: 
+  ListBrandOffersFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
         Fn::Sub: gobaskt-lists-BrandOffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::listBrandOffers
+      Handler: com.gobaskt.offers.handlers.brandOffers.ListBrandOffersHandler::listBrandOffers
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -43,14 +39,13 @@ Resources:
             Method: GET
             RestApiId:
               Ref: RestApi
-
-  CreateBrandOffersFunction: 
+  CreateBrandOffersFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
         Fn::Sub: gobaskt-create-BrandOffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::createBrandOffers
+      Handler: com.gobaskt.offers.handlers.brandOffers.SaveToDBBrandOffersHandler::createBrandOffers
       Policies:
         DynamoDBCrudPolicy:
           TableName:
@@ -62,15 +57,33 @@ Resources:
             Path: /gobaskt/brandOffers
             Method: POST
             RestApiId:
-              Ref: RestApi           
-
-  GetBrandOffersFunction: 
+              Ref: RestApi
+  CreateMultipleBrandOffersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-create-BrandOffers-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.brandOffers.SaveToDBBrandOffersHandler::createMultipleBrandOffers
+      Policies:
+        DynamoDBCrudPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/brandOffers/multiple
+            Method: POST
+            RestApiId:
+              Ref: RestApi
+  GetBrandOffersFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
         Fn::Sub: gobaskt-get-BrandOffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::getBrandOffer
+      Handler: com.gobaskt.offers.handlers.brandOffers.GetByConditionHandler::getBrandOffer
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -83,13 +96,13 @@ Resources:
             Method: GET
             RestApiId:
               Ref: RestApi
-  GetBrandoffersBySearchFunction: 
+  GetBrandoffersBySearchFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
         Fn::Sub: gobaskt-get-BrandOffers-search-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BrandOfferHanlder::getOffersBySearch
+      Handler: com.gobaskt.offers.handlers.brandOffers.GetByConditionHandler::getOffersBySearch
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -102,7 +115,6 @@ Resources:
             Method: GET
             RestApiId:
               Ref: RestApi
-  
   TasksTable:
     Type: AWS::Serverless::SimpleTable
     Properties:

@@ -15,9 +15,9 @@ public interface BasketService {
 	
 	List<BasketActivity> getBasketByOfferId(String id);
 	
-	void deleteBasketById(String id);
+	BasketActivity deleteBasketByOfferId(String id);
+	public BasketActivity deleteByBasketId(String id);
 	///void deleteOffers(String id);
-
 
 
 }

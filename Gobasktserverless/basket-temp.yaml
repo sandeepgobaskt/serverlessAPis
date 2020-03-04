@@ -26,7 +26,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-lists-Basket-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BasketHandler::listTasks
+      Handler: com.gobaskt.offers.handlers.basket.ListBasketOffersHandler::listTasks
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -45,7 +45,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-create-Basket-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BasketHandler::createTask
+      Handler: com.gobaskt.offers.handlers.basket.SaveToDBHandler::createTask
       Policies:
         DynamoDBCrudPolicy:
           TableName:
@@ -64,7 +64,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-get-basketById-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BasketHandler::getTask
+      Handler: com.gobaskt.offers.handlers.basket.SaveToDBHandler::getTask
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -83,7 +83,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-get-basketByOfferId-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BasketHandler::getbasketByOfferId
+      Handler: com.gobaskt.offers.handlers.basket.GetByConditionHandler::getbasketByOfferId
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -102,7 +102,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-delete-basketByOfferId-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.BasketHandler::deleteOffers
+      Handler: com.gobaskt.offers.handlers.basket.DeleteBasektHandler::deleteOffersByofferId
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -112,6 +112,25 @@ Resources:
           Type: Api
           Properties:
             Path: /gobaskt/basketByOffer/{id}
+            Method: DELETE
+            RestApiId:
+              Ref: RestApi
+  DeleteBasketofferidFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-delete-basketByOfferId-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.basket.DeleteBasektHandler::deleteBasketById
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/basketById/{id}
             Method: DELETE
             RestApiId:
               Ref: RestApi

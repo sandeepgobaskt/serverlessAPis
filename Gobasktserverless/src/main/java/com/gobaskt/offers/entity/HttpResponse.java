@@ -9,5 +9,5 @@ public class HttpResponse {
 	private final Boolean success;
 	private final String message;
 	private final int statusCode;
-	private final Object data;
+	private final Object responseData;
 }

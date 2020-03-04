@@ -1,8 +1,7 @@
-package com.gobaskt.offers.handlers;
+package com.gobaskt.offers.handlers.basket;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gobaskt.offers.entity.BasketActivityRest;
 import com.gobaskt.offers.entity.HttpResponse;
 import com.gobaskt.offers.model.BasketActivity;
-import com.gobaskt.offers.model.BrandOfferDummy;
 import com.gobaskt.offers.model.HttpResponseOffers;
 import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.model.OffersAdded;
@@ -25,19 +23,23 @@ import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.BasketServiceImpl;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
-public class BasketHandler {
+public class SaveToDBHandler {
 
-	private BasketService dao;
+	private BasketService basketService;
+	private final String DATA_NOT_FOUND = "no results";
+	private final String DATA_FOUND = "Success";
+	private final String BODY = "request body is empty";
+	private final String CREATED = "created";
 
-	public void setTaskDao(BasketService dao) {
-		this.dao = dao;
+	public void setTaskDao(BasketService basketService) {
+		this.basketService = basketService;
 	}
 
-	private BasketService getTaskDao() {
-		if (this.dao == null) {
-			this.dao = new BasketServiceImpl();
+	private BasketService getBasketService() {
+		if (this.basketService == null) {
+			this.basketService = new BasketServiceImpl();
 		}
-		return this.dao;
+		return this.basketService;
 	}
 
 	private LocalMerchantOffersServices localServices;
@@ -53,45 +55,6 @@ public class BasketHandler {
 		return this.localServices;
 	}
 
-	public APIGatewayProxyResponseEvent listTasks(APIGatewayProxyRequestEvent request, Context context) {
-
-		List<BasketActivity> tasks = this.getTaskDao().getBasket();
-		try {
-			HttpResponse http = new HttpResponse(true, "found", 200, tasks);
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonInString = mapper.writeValueAsString(http);
-
-			Map<String, String> headers = new HashMap<String, String>();
-			headers.put("Content-Type", "application/json");
-			return new APIGatewayProxyResponseEvent().withStatusCode(200).withHeaders(headers).withBody(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			return new APIGatewayProxyResponseEvent().withStatusCode(500);
-		}
-
-	}
-
-	public APIGatewayProxyResponseEvent getbasketByOfferId(APIGatewayProxyRequestEvent request, Context context) {
-		String taskId = request.getPathParameters().get("id");
-		List<BasketActivity> task = this.getTaskDao().getBasketByOfferId(taskId);
-		HttpResponse http = new HttpResponse(true, "found", 200, task);
-
-		if (task == null) {
-			return new APIGatewayProxyResponseEvent().withStatusCode(404);
-		}
-
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonInString = mapper.writeValueAsString(http);
-			Map<String, String> headers = new HashMap<String, String>();
-			headers.put("Content-Type", "application/json");
-			return new APIGatewayProxyResponseEvent().withStatusCode(200).withHeaders(headers).withBody(jsonInString);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-			return new APIGatewayProxyResponseEvent().withStatusCode(500);
-		}
-	}
-
 	public APIGatewayProxyResponseEvent createTask(APIGatewayProxyRequestEvent request, Context context) {
 		String body = request.getBody();
 		ObjectMapper mapper = new ObjectMapper();
@@ -101,7 +64,7 @@ public class BasketHandler {
 			HttpResponse http = new HttpResponse(true, "found", 200, body);
 			String jsonInString = mapper.writeValueAsString(http);
 			task = mapper.readValue(body, BasketActivityRest.class);
-			this.getTaskDao().saveToDB(task);
+			this.getBasketService().saveToDB(task);
 			return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(jsonInString);
 		} catch (JsonProcessingException e) {
 			HttpResponse http = new HttpResponse(false, "json parsing error", 500, null);
@@ -117,15 +80,15 @@ public class BasketHandler {
 			throws JsonProcessingException {
 		String taskId = request.getPathParameters().get("id");
 		LocalMerchantOffer local = this.getDao().getLocalMerchantOfferById(taskId);
-		List<BasketActivity> task = this.getTaskDao().getBasketByOfferId(taskId);
+		List<BasketActivity> task = this.getBasketService().getBasketByOfferId(taskId);
 
-		HttpResponseOffers offer = new HttpResponseOffers(true, "offer saved", 200, local);
+		HttpResponseOffers offer = new HttpResponseOffers(true, CREATED, 200, local);
 
-		if (local == null) {
+		if (local.equals(null)) {
 			ObjectMapper mapper = new ObjectMapper();
 			Map<String, String> headers = new HashMap<String, String>();
 			headers.put("Content-Type", "application/json");
-			HttpResponse http = new HttpResponse(true, "no offers found ", 200, local);
+			HttpResponse http = new HttpResponse(true,DATA_NOT_FOUND, 200, local);
 			String jsonInString = mapper.writeValueAsString(http);
 			return new APIGatewayProxyResponseEvent().withStatusCode(404).withBody(jsonInString);
 		}			
@@ -171,7 +134,7 @@ public class BasketHandler {
 					// list.add(offers);
 					basket.setOffers(offers);
 					if(task.isEmpty()) {
-					this.getTaskDao().saveToDB(basket);
+					this.getBasketService().saveToDB(basket);
 					Map<String, String> headers = new HashMap<String, String>();
 					headers.put("Content-Type", "application/json");
 					HttpResponse http = new HttpResponse(true, "offer saved", 200, basket);
@@ -194,10 +157,4 @@ public class BasketHandler {
 					return new APIGatewayProxyResponseEvent().withStatusCode(500);
 				}
 			}
-	public APIGatewayProxyResponseEvent deleteOffers(APIGatewayProxyRequestEvent request, Context context) {
-		String taskId = request.getPathParameters().get("id");
-		this.getTaskDao().deleteBasketById(taskId);
-		HttpResponse http = new HttpResponse(true, "deleted", 200, taskId);
-		return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(http.toString());
-	}
-		}
+}

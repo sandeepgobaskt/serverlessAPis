@@ -28,7 +28,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-lists-localoffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::listTasks
+      Handler: com.gobaskt.offers.handlers.localOffers.ListOffersHandlers::listTasks
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -47,7 +47,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-lists-published-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::listOffers
+      Handler: com.gobaskt.offers.handlers.localOffers.ListOffersHandlers::listOffers
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -66,7 +66,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-create-localoffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::createTask
+      Handler: com.gobaskt.offers.handlers.localOffers.SaveToDBHandler::createTask
       Policies:
         DynamoDBCrudPolicy:
           TableName:
@@ -85,7 +85,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-get-localoffersById-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::getTask
+      Handler: com.gobaskt.offers.handlers.localOffers.GetByConditionHandler::getTask
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -104,7 +104,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-get-localoffersByIds-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::getTaskByIDs
+      Handler: com.gobaskt.offers.handlers.localOffers.GetByConditionHandler::getTaskByIDs
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -123,7 +123,7 @@ Resources:
       FunctionName:
         Fn::Sub: gobaskt-get-localoffers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::getProduct
+      Handler: com.gobaskt.offers.handlers.localOffers.GetByConditionHandler::getProduct
       Policies:
         DynamoDBReadPolicy:
           TableName:
@@ -136,13 +136,32 @@ Resources:
             Method: GET
             RestApiId:
               Ref: RestApi
+  GetLocaloffersByNameFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: gobaskt-get-offersByname-${StageName}
+      CodeUri: target/test-0.0.1-SNAPSHOT.jar
+      Handler: com.gobaskt.offers.handlers.localOffers.GetByConditionHandler::getOfferByLMName
+      Policies:
+        DynamoDBReadPolicy:
+          TableName:
+            Ref: TasksTable
+      Events:
+        List:
+          Type: Api
+          Properties:
+            Path: /gobaskt/offers/name/{lmname}
+            Method: GET
+            RestApiId:
+              Ref: RestApi
   UpdateOffersFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
         Fn::Sub: gobaskt-update-offers-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::updateTask
+      Handler: com.gobaskt.offers.handlers.localOffers.UpdateOffersHandler::updateTask
       Policies:
         DynamoDBCrudPolicy:
           TableName:
@@ -151,17 +170,17 @@ Resources:
         List:
           Type: Api
           Properties:
-            Path: /gobaskt/offers/update/{id}
+            Path: /gobaskt/offers/update
             Method: PUT
             RestApiId:
               Ref: RestApi
-  ImageUploadFunction:
+  UpdatePublishOfferFunction:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName:
-        Fn::Sub: gobaskt-update-image-${StageName}
+        Fn::Sub: gobaskt-update-publishOffer-${StageName}
       CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::imageUpload
+      Handler: com.gobaskt.offers.handlers.localOffers.UpdateOffersHandler::runCampaign
       Policies:
         DynamoDBCrudPolicy:
           TableName:
@@ -170,27 +189,8 @@ Resources:
         List:
           Type: Api
           Properties:
-            Path: /gobaskt/offers/image
-            Method: POST
-            RestApiId:
-              Ref: RestApi
-  UpdateMultiOffersFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName:
-        Fn::Sub: gobaskt-update-Multioffers-${StageName}
-      CodeUri: target/test-0.0.1-SNAPSHOT.jar
-      Handler: com.gobaskt.offers.handlers.TaskRequestHandler::updateTasks
-      Policies:
-        DynamoDBCrudPolicy:
-          TableName:
-            Ref: TasksTable
-      Events:
-        List:
-          Type: Api
-          Properties:
-            Path: /gobaskt/offers/updates/
-            Method: PUT
+            Path: /gobaskt/offers/publishOffer/{id}
+            Method: GET
             RestApiId:
               Ref: RestApi
   TasksTable:
