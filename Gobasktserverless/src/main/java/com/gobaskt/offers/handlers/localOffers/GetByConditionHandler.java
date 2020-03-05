@@ -15,6 +15,11 @@ import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
+/**
+ * this is lambda hanlder
+ * for get offers by condition
+ * each method is one lambda function
+ * */
 public class GetByConditionHandler {
 
 	private LocalMerchantOffersServices localMerchantOffersServices;

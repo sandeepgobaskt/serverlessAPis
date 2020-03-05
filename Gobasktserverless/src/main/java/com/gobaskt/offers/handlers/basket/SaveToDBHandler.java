@@ -12,17 +12,23 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gobaskt.offers.entity.BasketActivityRest;
-import com.gobaskt.offers.entity.HttpResponse;
+import com.gobaskt.offers.entity.BasketActivityDto;
 import com.gobaskt.offers.model.BasketActivity;
 import com.gobaskt.offers.model.HttpResponseOffers;
 import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.model.OffersAdded;
+import com.gobaskt.offers.response.HttpResponse;
 import com.gobaskt.offers.service.BasketService;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.BasketServiceImpl;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
+
+/**
+ * this is lambda hanlder
+ * for saving offers to basket
+ * 
+ * */
 public class SaveToDBHandler {
 
 	private BasketService basketService;
@@ -58,12 +64,12 @@ public class SaveToDBHandler {
 	public APIGatewayProxyResponseEvent createTask(APIGatewayProxyRequestEvent request, Context context) {
 		String body = request.getBody();
 		ObjectMapper mapper = new ObjectMapper();
-		BasketActivityRest task;
+		BasketActivityDto task;
 
 		try {
 			HttpResponse http = new HttpResponse(true, "found", 200, body);
 			String jsonInString = mapper.writeValueAsString(http);
-			task = mapper.readValue(body, BasketActivityRest.class);
+			task = mapper.readValue(body, BasketActivityDto.class);
 			this.getBasketService().saveToDB(task);
 			return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(jsonInString);
 		} catch (JsonProcessingException e) {
@@ -96,7 +102,7 @@ public class SaveToDBHandler {
 
 					ObjectMapper mapper = new ObjectMapper();
 
-					BasketActivityRest basket = new BasketActivityRest();
+					BasketActivityDto basket = new BasketActivityDto();
 					Date date = new Date();
 					// List<OffersAdded> list = new ArrayList<>();
 

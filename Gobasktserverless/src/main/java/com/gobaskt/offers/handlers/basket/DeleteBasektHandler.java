@@ -8,11 +8,16 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gobaskt.offers.entity.HttpResponse;
 import com.gobaskt.offers.model.BasketActivity;
+import com.gobaskt.offers.response.HttpResponse;
 import com.gobaskt.offers.service.BasketService;
 import com.gobaskt.offers.service.impl.BasketServiceImpl;
 
+
+/** delete handler
+ * this is lambda function fro deleteing offers
+ *  
+ *  */
 public class DeleteBasektHandler {
 
 	private BasketService basketService;

@@ -2,6 +2,8 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: |
   Simple implementation of a REST API for an imaginary todo app.
+plugins:
+  - serverless-offline
 Globals:
   Function:
     Runtime: java8

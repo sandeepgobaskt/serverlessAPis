@@ -13,6 +13,10 @@ import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.service.BrandService;
 import com.gobaskt.offers.service.impl.BrandServiceImpl;
 
+/** delete handler
+ * this is lambda function fro deleteing offers
+ *  
+ *  */
 public class DeleteOffersHandler {
 
 	private BrandService brandService;

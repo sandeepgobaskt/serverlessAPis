@@ -3,8 +3,13 @@ package com.gobaskt.offers.entity;
 
 import lombok.Data;
 
+/**
+ * this is dto(data transfer object)
+ * 
+ * 
+ * */
 @Data
-public class BrandOffersDummyRest {
+public class BrandOffersDummyDto {
 
 	private String id;
 	private String Userid;

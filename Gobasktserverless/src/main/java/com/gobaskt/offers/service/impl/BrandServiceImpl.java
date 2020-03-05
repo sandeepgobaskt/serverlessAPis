@@ -13,14 +13,23 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.gobaskt.offers.entity.BrandOffersDummyRest;
+import com.gobaskt.offers.entity.BrandOffersDummyDto;
+
 import com.gobaskt.offers.model.BrandOfferDummy;
 import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.service.BrandService;
 
+//implementation of brandService
 public class BrandServiceImpl implements BrandService {
 
+	/**
+	 *connecting to dynamodb  
+	 * */
 	private AmazonDynamoDB client;
+	
+	/**It also enables you to perform various create, read, update, and delete (CRUD) operations on items,
+	 *  and execute queries and scans against tables.
+	                                                   */
 	private DynamoDBMapper mapper;
 
 	public BrandServiceImpl() {
@@ -28,19 +37,22 @@ public class BrandServiceImpl implements BrandService {
 		this.mapper = new DynamoDBMapper(this.client);
 	}
 
-	// get all brandOffers from Db
+	/**get all brandOffers from DynamoDB 
+	 * 
+	  */
 	public List<BrandOfferDummy> listBrandOffers() {
 		return this.mapper.scan(BrandOfferDummy.class, new DynamoDBScanExpression());
 	}
 
-	// Get brandoffers By id
+	/** Get brandoffers By id */
 	public BrandOfferDummy getBrandOffer(String id) {
 		return this.mapper.load(BrandOfferDummy.class, id);
 	}
 
-	// save brand offers to db
+	/** save brand offers to brandOffers Table
+	 *  */
 	public void saveBrandOffer(Object task) {
-		BrandOffersDummyRest manualData = (BrandOffersDummyRest) task;
+		BrandOffersDummyDto manualData = (BrandOffersDummyDto) task;
 		BrandOfferDummy data = new BrandOfferDummy();
 		data.setOfferTitle(manualData.getOfferTitle());
 		data.setOfferValue(manualData.getOfferValue());
@@ -129,7 +141,7 @@ public class BrandServiceImpl implements BrandService {
 	}
 
 	@Override
-	public List<BrandOffersDummyRest> saveToDB(List<?> brandOffers) {
+	public List<BrandOffersDummyDto> saveToDB(List<?> brandOffers) {
 		Iterable<BrandOfferDummy> entities = new Iterable<BrandOfferDummy>() {
 			@Override
 			public Iterator<BrandOfferDummy> iterator() {
@@ -138,7 +150,7 @@ public class BrandServiceImpl implements BrandService {
 
 					@Override
 					public BrandOfferDummy next() {
-						BrandOffersDummyRest manualData = (BrandOffersDummyRest) brandOffers.get(index++);
+						BrandOffersDummyDto manualData = (BrandOffersDummyDto) brandOffers.get(index++);
 						BrandOfferDummy data = new BrandOfferDummy();
 						data.setOfferTitle(manualData.getOfferTitle());
 						data.setOfferValue(manualData.getOfferValue());

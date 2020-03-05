@@ -22,11 +22,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.gobaskt.offers.entity.LocalMerchantOfferManualCsvData;
+import com.gobaskt.offers.entity.LocalMerchantOfferDto;
+
 import com.gobaskt.offers.model.BasketActivity;
 import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 
+//all methods implementation here
 public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServices {
 
 	private AmazonDynamoDB client;
@@ -37,17 +39,17 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 		this.mapper = new DynamoDBMapper(this.client);
 	}
 
-//save offers to db
+	// save offers to db
 	@Override
 	public LocalMerchantOffer saveToDB(Object object) {
-		LocalMerchantOfferManualCsvData csvLMOffer = (LocalMerchantOfferManualCsvData) object;
+		LocalMerchantOfferDto csvLMOffer = (LocalMerchantOfferDto) object;
 		LocalMerchantOffer lMOffer = new LocalMerchantOffer();
 		lMOffer.setLMID(csvLMOffer.getLMID());
 		lMOffer.setLMLocation(csvLMOffer.getLMLocation());
 		lMOffer.setLMName(csvLMOffer.getLMName());
 		lMOffer.setProductName(csvLMOffer.getProductName());
 		lMOffer.setLMDescription(csvLMOffer.getLMDescription());
-		
+
 		lMOffer.setLMOfferTitle(csvLMOffer.getLMOfferTitle());
 		lMOffer.setLMOfferSubType(csvLMOffer.getLMOfferSubType());
 		lMOffer.setLMOfferType(csvLMOffer.getLMOfferType());
@@ -76,7 +78,6 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 		lMOffer.setBackTemplateUrl(csvLMOffer.getBackTemplateUrl());
 		lMOffer.setOfferStatus(csvLMOffer.getOfferStatus());
 		lMOffer.setPublished(csvLMOffer.getPublished());
-
 
 		StringBuilder sb = new StringBuilder();
 		if (StringUtils.hasText(csvLMOffer.getProductName())) {
@@ -138,17 +139,17 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 
 		}
 		lMOffer.setSearchData(sb.toString());
-		
+
 		this.mapper.save(lMOffer);
 
 		return null;
 
 	}
 
-	// update offer
+	// update offer by id
 	@Override
 	public LocalMerchantOffer update(Object object) {
-		LocalMerchantOfferManualCsvData csvLMOffer = (LocalMerchantOfferManualCsvData) object;
+		LocalMerchantOfferDto csvLMOffer = (LocalMerchantOfferDto) object;
 		LocalMerchantOffer lMOffer = new LocalMerchantOffer();
 
 		LocalMerchantOffer offer = this.getLocalMerchantOfferById(csvLMOffer.getId());
@@ -158,7 +159,7 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 		lMOffer.setLMName(csvLMOffer.getLMName());
 		lMOffer.setProductName(csvLMOffer.getProductName());
 		lMOffer.setLMDescription(csvLMOffer.getLMDescription());
-		
+
 		lMOffer.setId(offer.getId());
 		lMOffer.setLMOfferTitle(csvLMOffer.getLMOfferTitle());
 		lMOffer.setLMOfferSubType(csvLMOffer.getLMOfferSubType());
@@ -173,7 +174,7 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 		lMOffer.setMobileOfferImage2(csvLMOffer.getMobileOfferImage2());
 		lMOffer.setOfferRegion(csvLMOffer.getOfferRegion());
 		lMOffer.setOfferStartDate(csvLMOffer.getOfferStartDate());
-		
+
 		lMOffer.setOfferStartTime(csvLMOffer.getOfferStartTime());
 		lMOffer.setOfferTermsandConditions(csvLMOffer.getOfferTermsandConditions());
 		lMOffer.setOfferCategory(csvLMOffer.getOfferCategory());
@@ -285,34 +286,7 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 						lMOffer.setFrontTemplateUrl(csvLMOffer.getBackTemplateUrl());
 						lMOffer.setBackTemplateUrl(csvLMOffer.getBackTemplateUrl());
 						lMOffer.setOfferStatus(csvLMOffer.getOfferStatus());
-						// lMOffer.setPublished(csvLMOffer.getPublished());
 
-						/*
-						 * StringBuilder sb = new StringBuilder(); if
-						 * (StringUtils.hasText(csvLMOffer.getProductName())) {
-						 * sb.append(csvLMOffer.getProductName().toLowerCase()); sb.append(" "); } if
-						 * (StringUtils.hasText(csvLMOffer.getLMName())) {
-						 * sb.append(csvLMOffer.getLMName().toLowerCase()); sb.append(" "); } if
-						 * (StringUtils.hasText(csvLMOffer.getLMDescription())) {
-						 * sb.append(csvLMOffer.getLMDescription().toLowerCase()); sb.append(" ");
-						 * 
-						 * } if (StringUtils.hasText(csvLMOffer.getEANCode())) {
-						 * sb.append(csvLMOffer.getEANCode().toLowerCase()); sb.append(" ");
-						 * 
-						 * } if (StringUtils.hasText(csvLMOffer.getOfferRegion())) {
-						 * sb.append(csvLMOffer.getOfferRegion().toLowerCase()); sb.append(" ");
-						 * 
-						 * } if (StringUtils.hasText(csvLMOffer.getApplicableProducts())) {
-						 * sb.append(csvLMOffer.getApplicableProducts().toLowerCase()); sb.append(" ");
-						 * 
-						 * } if (StringUtils.hasText(csvLMOffer.getLMOfferTitle())) {
-						 * sb.append(csvLMOffer.getApplicableProducts().toLowerCase()); sb.append(" ");
-						 * 
-						 * } if (StringUtils.hasText(csvLMOffer.getUPCCode())) {
-						 * sb.append(csvLMOffer.getUPCCode().toLowerCase()); sb.append(" ");
-						 * 
-						 * }
-						 */
 						lMOffer.setSearchData(csvLMOffer.getSearchData());
 						// this.mapper.save(lMOffer);
 						lMOffer.setPublished("Yes");
@@ -420,17 +394,18 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 
 	public List<LocalMerchantOffer> getOffersByExprydate(String lmName) {
 
-		//LocalDate twoWeeksAgo = LocalDate.now();
+		// LocalDate twoWeeksAgo = LocalDate.now();
 
 		// SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
 		// DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-		//String twoWeeksAgoStr = DateTimeFormatter.ofPattern("MM/dd/yyyy").format(twoWeeksAgo);
+		// String twoWeeksAgoStr =
+		// DateTimeFormatter.ofPattern("MM/dd/yyyy").format(twoWeeksAgo);
 
 		Map<String, AttributeValue> eav = new HashMap<String, AttributeValue>();
 		eav.put(":val1", new AttributeValue().withS(lmName));
 		eav.put(":val2", new AttributeValue().withS("No"));
-		//eav.put(":val3", new AttributeValue().withS("05/17/2020"));
+		// eav.put(":val3", new AttributeValue().withS("05/17/2020"));
 
 		/*
 		 * DynamoDBQueryExpression<LocalMerchantOffer> queryExpression = new
@@ -444,11 +419,12 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 
 		List<LocalMerchantOffer> latestReplies = mapper.scan(LocalMerchantOffer.class, scanExpression);
 		return latestReplies;
-		
+
 	}
 
-	// run campaign
-	@Override 
+	// run campaign 
+	//update the published field to "YES"
+	@Override
 	public LocalMerchantOffer runCampaign(Object object) {
 		LocalMerchantOffer csvLMOffer = (LocalMerchantOffer) object;
 		LocalMerchantOffer lMOffer = new LocalMerchantOffer();
@@ -494,6 +470,4 @@ public class LocalMerchantOfferServicesImpl implements LocalMerchantOffersServic
 		return null;
 	}
 
-	
-	
 }

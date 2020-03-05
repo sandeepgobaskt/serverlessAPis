@@ -12,12 +12,19 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 
 import lombok.Data;
+/**
+ * Created by sandeep kathoju.
+ */
+
 
 @Data
 @DynamoDBDocument
+
 public class OffersAdded  {
 	
-	
+	/**
+	 *this data coming from localOffers table 
+	 */
 	private String offerId;
 	
 	@DynamoDBAttribute

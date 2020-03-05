@@ -14,6 +14,11 @@ import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.service.BrandService;
 import com.gobaskt.offers.service.impl.BrandServiceImpl;
 
+/**
+ * this is lambda hanlder
+ * for get by condition
+ * 
+ * */
 public class GetByConditionHandler {
 
 	private BrandService brandService;

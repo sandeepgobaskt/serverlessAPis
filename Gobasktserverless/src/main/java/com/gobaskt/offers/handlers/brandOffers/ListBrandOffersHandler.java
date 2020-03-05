@@ -14,6 +14,12 @@ import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.service.BrandService;
 import com.gobaskt.offers.service.impl.BrandServiceImpl;
 
+
+/**
+ * this is lambda hanlder
+ * for get list of brand offers
+ * 
+ * */
 public class ListBrandOffersHandler {
 	private BrandService brandService;
 	private final String DATA_NOT_FOUND = "no results";

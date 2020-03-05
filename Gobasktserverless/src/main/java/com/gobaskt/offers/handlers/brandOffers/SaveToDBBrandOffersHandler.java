@@ -11,11 +11,18 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gobaskt.offers.entity.BrandOffersDummyRest;
+import com.gobaskt.offers.entity.BrandOffersDummyDto;
+
 import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.service.BrandService;
 import com.gobaskt.offers.service.impl.BrandServiceImpl;
 
+
+/**
+ * this is lambda hanlder
+ * for saving offers to brand offers
+ * 
+ * */
 public class SaveToDBBrandOffersHandler {
 
 	private BrandService brandService;
@@ -39,7 +46,7 @@ public class SaveToDBBrandOffersHandler {
 			throws JsonProcessingException {
 		String body = request.getBody();
 		ObjectMapper mapper = new ObjectMapper();
-		BrandOffersDummyRest task;
+		BrandOffersDummyDto task;
 		if (body.isEmpty()) {
 			HttpResponse http = new HttpResponse(true, DATA_NOT_FOUND, 204, body);
 			// ObjectMapper mapper = new ObjectMapper();
@@ -52,7 +59,7 @@ public class SaveToDBBrandOffersHandler {
 		try {
 			HttpResponse http = new HttpResponse(true, DATA_FOUND, 200, body);
 			String jsonInString = mapper.writeValueAsString(http);
-			task = mapper.readValue(body, BrandOffersDummyRest.class);
+			task = mapper.readValue(body, BrandOffersDummyDto.class);
 			this.getBrandService().saveBrandOffer(task);
 			return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(jsonInString);
 		} catch (JsonProcessingException e) {
@@ -68,7 +75,7 @@ public class SaveToDBBrandOffersHandler {
 			throws JsonProcessingException {
 		String body = request.getBody();
 		ObjectMapper mapper = new ObjectMapper();
-		List<BrandOffersDummyRest> task;
+		List<BrandOffersDummyDto> task;
 		if (body.isEmpty()) {
 			HttpResponse http = new HttpResponse(true, DATA_NOT_FOUND, 204, body);
 			// ObjectMapper mapper = new ObjectMapper();
@@ -81,7 +88,7 @@ public class SaveToDBBrandOffersHandler {
 		try {
 			HttpResponse http = new HttpResponse(true, DATA_FOUND, 200, body);
 			String jsonInString = mapper.writeValueAsString(http);
-			task = mapper.readValue(body, new TypeReference<List<BrandOffersDummyRest>>(){});
+			task = mapper.readValue(body, new TypeReference<List<BrandOffersDummyDto>>(){});
 			this.getBrandService().saveToDB(task);
 			return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(jsonInString);
 		} catch (JsonProcessingException e) {

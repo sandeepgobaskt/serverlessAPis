@@ -1,9 +1,14 @@
-package com.gobaskt.offers.entity;
+package com.gobaskt.offers.response;
 
 
 
 import lombok.Data;
 
+/**
+ * this is response class
+ * 
+ * 
+ * */
 @Data
 public class HttpResponse {
 	private final Boolean success;

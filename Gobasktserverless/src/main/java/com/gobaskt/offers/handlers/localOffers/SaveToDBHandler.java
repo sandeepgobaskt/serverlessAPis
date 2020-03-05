@@ -11,11 +11,16 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.drew.imaging.ImageProcessingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gobaskt.offers.entity.LocalMerchantOfferManualCsvData;
+import com.gobaskt.offers.entity.LocalMerchantOfferDto;
 import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
+/**
+ * this is lambda hanlder
+ * for saving offers to db
+ * 
+ * */
 public class SaveToDBHandler {
 
 	private LocalMerchantOffersServices localMerchantOffersServices;
@@ -39,7 +44,7 @@ public class SaveToDBHandler {
 			throws ImageProcessingException, JsonProcessingException {
 		String body = request.getBody();
 
-		LocalMerchantOfferManualCsvData task;
+		LocalMerchantOfferDto task;
 		LambdaLogger logger = context.getLogger();
 		logger.log("request data" + request.getBody());
 		if (body.isEmpty()) {
@@ -55,7 +60,7 @@ public class SaveToDBHandler {
 
 			HttpResponse http = new HttpResponse(true, CREATED, 200, body);
 			String jsonInString = mapper.writeValueAsString(http);
-			task = mapper.readValue(body, LocalMerchantOfferManualCsvData.class);
+			task = mapper.readValue(body, LocalMerchantOfferDto.class);
 			task.setOfferStatus("Active");
 			task.setPublished("No");
 			// validate(task);

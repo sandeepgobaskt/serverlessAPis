@@ -15,7 +15,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
-import com.gobaskt.offers.entity.BasketActivityRest;
+import com.gobaskt.offers.entity.BasketActivityDto;
+
 import com.gobaskt.offers.model.BasketActivity;
 import com.gobaskt.offers.service.BasketService;
 
@@ -34,7 +35,7 @@ public class BasketServiceImpl implements BasketService {
 	@Override
 	public BasketActivity saveToDB(Object object) {
 
-		BasketActivityRest basket = (BasketActivityRest) object;
+		BasketActivityDto basket = (BasketActivityDto) object;
 		BasketActivity basketActivity = new BasketActivity();
 		// baksetActivity.setBasket_userId(basket_userId);\
 

@@ -3,6 +3,12 @@ package com.gobaskt.offers.handlers.brandOffers;
 import com.gobaskt.offers.service.BrandService;
 import com.gobaskt.offers.service.impl.BrandServiceImpl;
 
+/**
+ * this is lambda hanlder
+ * for update offers to basket
+ * (this  is feature is not  there in app
+ * 
+ * */
 public class UpdatebrandOffersHandler {
 
 	private BrandService brandService;

@@ -1,6 +1,9 @@
 package com.gobaskt.offers;
-//author//
-//sandeep kathoju
+/**
+ * Created by sandeep kathoju .
+ */
+
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

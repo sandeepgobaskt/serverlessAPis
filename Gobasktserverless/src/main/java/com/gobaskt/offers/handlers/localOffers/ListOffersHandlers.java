@@ -21,6 +21,12 @@ import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
+
+/**
+ * this is lambda hanlder
+ * for get list of offers 
+ * 
+ * */
 public class ListOffersHandlers {
 
 	private LocalMerchantOffersServices localMerchantOffersServices;

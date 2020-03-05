@@ -12,12 +12,18 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gobaskt.offers.entity.LocalMerchantOfferManualCsvData;
+import com.gobaskt.offers.entity.LocalMerchantOfferDto;
+
 import com.gobaskt.offers.model.HttpResponse;
 import com.gobaskt.offers.model.LocalMerchantOffer;
 import com.gobaskt.offers.service.LocalMerchantOffersServices;
 import com.gobaskt.offers.service.impl.LocalMerchantOfferServicesImpl;
 
+/**
+ * this is lambda hanlder
+ * for update offers to basket
+ * 
+ * */
 public class UpdateOffersHandler {
 	private LocalMerchantOffersServices localMerchantOffersServices;
 
@@ -45,7 +51,7 @@ public class UpdateOffersHandler {
 			throws JsonProcessingException {
 		String body = request.getBody();
 
-		LocalMerchantOfferManualCsvData task;
+		LocalMerchantOfferDto task;
 		if (body.isEmpty()) {
 			ObjectMapper mapper = new ObjectMapper();
 			HttpResponse http = new HttpResponse(true, BODY, 204, body);
@@ -56,7 +62,7 @@ public class UpdateOffersHandler {
 		}
 		try {
 			ObjectMapper mapper = new ObjectMapper();
-			task = mapper.readValue(body, LocalMerchantOfferManualCsvData.class);
+			task = mapper.readValue(body, LocalMerchantOfferDto.class);
 
 			task.setOfferStatus("Active");
 			task.setPublished("No");
@@ -154,15 +160,15 @@ public class UpdateOffersHandler {
 		String body = request.getBody();
 		ObjectMapper mapper = new ObjectMapper();
 
-		List<LocalMerchantOfferManualCsvData> task;
+		List<LocalMerchantOfferDto> task;
 
 		try {
 
-			task = mapper.readValue(body, new TypeReference<List<LocalMerchantOfferManualCsvData>>() {
+			task = mapper.readValue(body, new TypeReference<List<LocalMerchantOfferDto>>() {
 			});
 
 			HttpResponse http = new HttpResponse(true, DATA_FOUND, 200, task);
-			LocalMerchantOfferManualCsvData local = new LocalMerchantOfferManualCsvData();
+			LocalMerchantOfferDto local = new LocalMerchantOfferDto();
 			local.setPublished("Yes");
 			task.add(local);
 			this.getLocalMerchantOffersServices().saveToDB(task);
